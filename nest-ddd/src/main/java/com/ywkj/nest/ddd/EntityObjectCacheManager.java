@@ -7,12 +7,8 @@ import com.ywkj.nest.core.utils.SpringUtils;
 /**
  * Created by Jove on 2016/8/31.
  */
- public class EntityObjectCacheManager {
-    static {
-        CacheFactory cacheFactory = SpringUtils.getInstance(CacheFactory.class);
-        cacheClient = cacheFactory.getCacheClient("entityObject");
+public class EntityObjectCacheManager {
 
-    }
 
     private static String getCacheKey(EntityObject entityObject) {
         return entityObject.getClass().getName() + "_" + entityObject.getId();
@@ -24,17 +20,25 @@ import com.ywkj.nest.core.utils.SpringUtils;
 
     private static CacheClient cacheClient;
 
+    public synchronized static CacheClient getCacheClient() {
+        if (cacheClient == null) {
+            CacheFactory cacheFactory = SpringUtils.getInstance(CacheFactory.class);
+            cacheClient = cacheFactory.getCacheClient("entityObject");
+        }
+        return cacheClient;
+    }
+
     public static void put(EntityObject entityObject) {
         if (entityObject != null)
-            cacheClient.put(getCacheKey(entityObject), entityObject);
+            getCacheClient().put(getCacheKey(entityObject), entityObject);
     }
 
     public static void remove(EntityObject entityObject) {
         if (entityObject != null)
-            cacheClient.remove(getCacheKey(entityObject));
+            getCacheClient().remove(getCacheKey(entityObject));
     }
 
     public static <T extends EntityObject> T get(Class<T> tClass, String id) {
-        return cacheClient.get(tClass, id);
+        return getCacheClient().get(tClass, id);
     }
 }
