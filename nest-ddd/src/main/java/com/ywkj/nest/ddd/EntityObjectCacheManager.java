@@ -41,4 +41,7 @@ public class EntityObjectCacheManager {
     public static <T extends EntityObject> T get(Class<T> tClass, String id) {
         return getCacheClient().get(tClass, id);
     }
+    public static void removeAll(){
+        getCacheClient().removeAll();
+    }
 }
